@@ -48,6 +48,8 @@ static CGFloat const profilePictureHeight = 50.0f;
     self.title = @"COMMENTS";
 
     [self setupCommentsTable];
+
+    self.view.backgroundColor = [UIColor blueColor];
 //    [self subscribeForChangeFont];
 }
 

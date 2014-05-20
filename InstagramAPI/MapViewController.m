@@ -47,7 +47,6 @@
     [segmentedControl setTintColor:[UIColor blackColor]];
 
     [self.view addSubview:segmentedControl];
-
 }
 
 -(IBAction)segmentControlDidChangeSelectedIndex:(UISegmentedControl *)control
