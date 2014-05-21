@@ -5,15 +5,17 @@
 #import "PhotoPost.h"
 #import "TableCell+PhotoPost.h"
 #import "CommentsViewController.h"
+#import "MapViewController.h"
+#import "PhotoLocation.h"
 
 static NSString *const cellIdentifier = @"cellIdentifier";
 
 static const int mockPostsCount = 300;
 #define HEIGHT_NAVIGATION_CONTROLLER 64
-#define SEARCH_BAR_RECT CGRectMake(0, 0, 290, 44)
 #define NUMBER_OF_SECTION 1
 #define HEIGHT_CELL 60
 #define HEIGHT_KEYBOARD 215
+#define HEIGHT_SEGMENT_CONTROLL 25
 
 #if DEBUG
 #define SHOW_FAKE_PHOTOS 0
@@ -30,11 +32,15 @@ static const int mockPostsCount = 300;
     DataLoader *_dataLoader;
     DataSource *_dataSource;
     UILabel *_noResult;
+    MapViewController *_mapViewController;
 }
 
 @end
 
 @implementation SearchViewController
+{
+    UISegmentedControl *_segmentedControl;
+}
 
 
 -(void)didReceiveMemoryWarning
@@ -49,6 +55,9 @@ static const int mockPostsCount = 300;
     [self setupDataLoaderConfigure];
     [self setupSearchConfigure];
     [self setupActivityIndicatorConfigure];
+    [self setupSegmentedControl];
+
+    [self setupMapViewController];
 
 }
 
@@ -56,13 +65,15 @@ static const int mockPostsCount = 300;
 
 -(void)setupSearchConfigure
 {
-    _searchBar = [[UISearchBar alloc] initWithFrame:SEARCH_BAR_RECT];
+    _searchBar = [[UISearchBar alloc] init];
     _searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    self.navigationItem.rightBarButtonItem =  [[UIBarButtonItem alloc]
-            initWithCustomView:_searchBar];
-
+    self.navigationItem.titleView = _searchBar;
     _searchBar.delegate = self;
+}
 
+-(void)setupMapViewController
+{
+    _mapViewController = [[MapViewController alloc]  init];
 }
 
 -(void)setupTableViewConfigure
@@ -73,13 +84,11 @@ static const int mockPostsCount = 300;
     _tableView.delegate = self;
     _tableView.rowHeight = HEIGHT_CELL;
     _tableView.separatorInset = UIEdgeInsetsZero;
-    _tableView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
-    _tableView.backgroundColor = [UIColor grayColor];
+    _tableView.contentInset = UIEdgeInsetsMake( HEIGHT_NAVIGATION_CONTROLLER, 0, 0, 0);
 
     [_tableView registerClass:[TableCell class] forCellReuseIdentifier:cellIdentifier];
 
     [self.view addSubview:_tableView];
-
 }
 
 -(void)setupActivityIndicatorConfigure
@@ -121,7 +130,7 @@ static const int mockPostsCount = 300;
         tableRect = CGRectMake(0, 0,CGRectGetWidth(self.view.bounds),
                 CGRectGetHeight(self.view.bounds) - HEIGHT_KEYBOARD);
     } else {
-        tableRect = CGRectMake(0, 0,CGRectGetWidth(self.view.bounds),
+        tableRect = CGRectMake(0,0,CGRectGetWidth(self.view.bounds),
                 CGRectGetHeight(self.view.bounds));
     }
     return tableRect;
@@ -136,6 +145,61 @@ static const int mockPostsCount = 300;
     [self.navigationController pushViewController:controller animated:YES];
 }
 
+-(void)setupSegmentedControl
+{
+    _segmentedControl = [[UISegmentedControl alloc] initWithItems:@[@"map",@"list"]];
+
+    [_segmentedControl addTarget:self
+                          action:@selector(segmentControlDidChangeSelectedIndex:)
+                forControlEvents:UIControlEventValueChanged];
+
+    CGRect segmentFrame = CGRectMake(0,0,100,HEIGHT_SEGMENT_CONTROLL);
+
+    _segmentedControl.frame = segmentFrame;
+    _segmentedControl.selectedSegmentIndex = 1;
+    [_segmentedControl setTintColor:[UIColor whiteColor]];
+
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_segmentedControl];
+
+}
+
+-(IBAction)segmentControlDidChangeSelectedIndex:(UISegmentedControl *)control
+{
+    NSInteger selectedIndex = control.selectedSegmentIndex;
+
+    switch (selectedIndex)
+    {
+        case 0:
+            [self showMapViewController];
+            break;
+        case 1:
+            [self showSearchViewController];
+            break;
+
+        default: break;
+    }
+}
+
+-(void)showMapViewController
+{
+    [_mapViewController willMoveToParentViewController:self];
+    [self addChildViewController:_mapViewController];
+    [self.view addSubview:_mapViewController.view];
+    [_mapViewController didMoveToParentViewController:self];
+
+}
+
+-(void)showSearchViewController
+{
+    [_mapViewController willMoveToParentViewController:nil];
+    [_mapViewController.view removeFromSuperview];
+    [_mapViewController removeFromParentViewController];
+}
+
+-(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [_searchBar resignFirstResponder];
+}
 
 #pragma mark - table view dataSource methods
 
@@ -166,9 +230,7 @@ static const int mockPostsCount = 300;
     [_searchBar resignFirstResponder];
 
     [self showCommentsAtIndexPath:indexPath];
-
 }
-
 
 #pragma mark - search bar delegate methods
 
@@ -183,7 +245,7 @@ static const int mockPostsCount = 300;
     [_noResult removeFromSuperview];
     [_tableView removeFromSuperview];
 
-    #if SHOW_FAKE_PHOTOS
+#if SHOW_FAKE_PHOTOS
 
     [_activityIndicator stopAnimating];
 
@@ -197,18 +259,18 @@ static const int mockPostsCount = 300;
 
     #else
 
-     [_dataLoader loadDataArrayForQuery:searchText withCallback:^(NSArray *array,NSError *error){
-         if (!error) {
-             [self dataLoaderCallback:array];
-         } else {
-             NSLog(@"%@",error.localizedDescription);
-             [self setNoResultConfigureWithText:error.localizedDescription];
-             [_activityIndicator stopAnimating];
-             return;
-         }
-     }];
+    [_dataLoader loadDataArrayForQuery:searchText withCallback:^(NSArray *array,NSError *error){
+        if (!error) {
+            [self dataLoaderCallback:array];
+        } else {
+            NSLog(@"%@",error.localizedDescription);
+            [self setNoResultConfigureWithText:error.localizedDescription];
+            [_activityIndicator stopAnimating];
+            return;
+        }
+    }];
 
-    #endif
+#endif
 }
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
@@ -218,19 +280,33 @@ static const int mockPostsCount = 300;
 
 -(void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
-   _tableView.frame = [self tableRectWithExistKeyboard];
+    _tableView.frame = [self tableRectWithExistKeyboard];
 }
 
-- (void)dataLoaderCallback:(NSArray *)array {
+- (void)dataLoaderCallback:(NSArray *)array
+{
+    [self showSearchViewController];
+
     [_activityIndicator stopAnimating];
 
     _dataSource = [[DataSource alloc] initWithArray:array];
 
-    if(array.count > 0) {
+    if(array.count > 0)
+    {
         [self setupTableViewConfigure];
-    } else {
+    }
+    else
+    {
         [self setNoResultConfigureWithText:@"Sorry,\n can't find \nanything :("];
 
+    }
+
+    [_mapViewController reloadAnnotationsWithDataSource:_dataSource];
+
+    BOOL isNeedShowMap = _segmentedControl.selectedSegmentIndex == 0;
+    if (isNeedShowMap)
+    {
+       [self showMapViewController];
     }
 }
 

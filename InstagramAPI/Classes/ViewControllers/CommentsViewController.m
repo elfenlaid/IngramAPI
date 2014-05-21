@@ -24,11 +24,6 @@ static CGFloat const profilePictureHeight = 50.0f;
     NSArray *_commentsArray;
 }
 
--(void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 -(id)initWithCommentsArray:(NSArray *)comments
 {
     self = [super initWithNibName:nil bundle:nil];
@@ -49,8 +44,6 @@ static CGFloat const profilePictureHeight = 50.0f;
 
     [self setupCommentsTable];
 
-    self.view.backgroundColor = [UIColor blueColor];
-//    [self subscribeForChangeFont];
 }
 
 #pragma mark - internals methods
@@ -90,19 +83,6 @@ static CGFloat const profilePictureHeight = 50.0f;
 
     [self.view addSubview:noResult];
 }
-
-//-(void)subscribeForChangeFont
-//{
-//    [[NSNotificationCenter defaultCenter] addObserver:self
-//                                             selector:@selector(didChangePreferredContentSize)
-//                                                 name:UIContentSizeCategoryDidChangeNotification
-//                                               object:nil];
-//}
-//
-//-(void)didChangePreferredContentSize
-//{
-//    [_commentsTable reloadData];
-//}
 
 #pragma mark - table view data source methods
 

@@ -8,6 +8,8 @@
 
 - (PhotoPost *)objectAtIndexPath:(NSIndexPath *)path;
 
+- (PhotoPost *)objectAtIndex:(NSUInteger)index1;
+
 - (NSInteger)count;
 
 @end

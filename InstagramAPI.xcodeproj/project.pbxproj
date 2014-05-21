@@ -29,6 +29,8 @@
 		CEE89293A21EF061FD47A6F9 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CEE89A411391E371585BAFEA /* Images.xcassets */; };
 		CEE8929A0A0F0A43D3514DF9 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE89E337B5A7A80A8F3E5DF /* UIKit.framework */; };
 		CEE892EC0FB83C4FE5BD00FC /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE89E337B5A7A80A8F3E5DF /* UIKit.framework */; };
+		CEE8935CAFE5F7A345D28C05 /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE89116AB9E7542C9280EA3 /* MapViewController.m */; };
+		CEE893612B407785D9A90579 /* PhotoLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE89189F36506C0201AC721 /* PhotoLocation.m */; };
 		CEE8951C5722979A46107445 /* idea.png in Resources */ = {isa = PBXBuildFile; fileRef = CEE89C74E7DE320BB34DF7BB /* idea.png */; };
 		CEE8953EE9EE2F7C6716DBF3 /* InstagramAPITests.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE894AC27AB1E24FEDAC43A /* InstagramAPITests.m */; };
 		CEE89678C2E932C6AC99FE34 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE89E26D5B77AE553EE81F0 /* main.m */; };
@@ -36,9 +38,9 @@
 		CEE898243BE30DB18C635DA8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE89BCAD474131E4DAA237A /* Foundation.framework */; };
 		CEE8994B212091BECB40A364 /* JSONParser.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE89B9EE26809E7ED53FB61 /* JSONParser.m */; };
 		CEE89A634CD3AFA98A6A4386 /* appCode.png in Resources */ = {isa = PBXBuildFile; fileRef = CEE89139434627C624940FE5 /* appCode.png */; };
+		CEE89C1CFC20AC8EFA5B999B /* Annotation.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE89D562B6FD65FD0529A67 /* Annotation.m */; };
 		CEE89C99853051E4AAC7278B /* InstagramAPI.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CEE89A1B830121F294FAE797 /* InstagramAPI.xcdatamodeld */; };
 		CEE89CEE7F0FAD40E2C1D50E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE89A6725A9D1C12DA6ACE8 /* AppDelegate.m */; };
-		CEE89D2D6C3FC7B48F050CAE /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE891068BC76EECB68D956C /* MapViewController.m */; };
 		CEE89D72C5A5D330FB5CB935 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE89BCAD474131E4DAA237A /* Foundation.framework */; };
 		CEE89DADBF11A5BEB13D1069 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE8960A6026BD6A22151D5D /* XCTest.framework */; };
 		CEE89E0A673DAA348ECCE7BB /* like.png in Resources */ = {isa = PBXBuildFile; fileRef = CEE89043FF217B492FEE8030 /* like.png */; };
@@ -82,8 +84,10 @@
 		7DE5BE9D1929DB84003AC52A /* CommentsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommentsViewController.h; path = Classes/ViewControllers/CommentsViewController.h; sourceTree = "<group>"; };
 		7DE5BE9E1929DB84003AC52A /* CommentsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CommentsViewController.m; path = Classes/ViewControllers/CommentsViewController.m; sourceTree = "<group>"; };
 		CEE89043FF217B492FEE8030 /* like.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = like.png; sourceTree = "<group>"; };
-		CEE891068BC76EECB68D956C /* MapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapViewController.m; sourceTree = "<group>"; };
+		CEE89075B461B916B2B759F1 /* MapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapViewController.h; sourceTree = "<group>"; };
+		CEE89116AB9E7542C9280EA3 /* MapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapViewController.m; sourceTree = "<group>"; };
 		CEE89139434627C624940FE5 /* appCode.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = appCode.png; sourceTree = "<group>"; };
+		CEE89189F36506C0201AC721 /* PhotoLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoLocation.m; sourceTree = "<group>"; };
 		CEE891D7571C2F8FE1481154 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		CEE892D9A99764638496D713 /* TagParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagParser.m; sourceTree = "<group>"; };
 		CEE892E34DCD14470564FA39 /* xCode.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = xCode.png; sourceTree = "<group>"; };
@@ -92,21 +96,23 @@
 		CEE895602652E7264D26A370 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		CEE8960A6026BD6A22151D5D /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		CEE8960C27BB1F70FEE20A94 /* InstagramAPI.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = InstagramAPI.xcdatamodel; sourceTree = "<group>"; };
+		CEE89771A99194B232431727 /* PhotoLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoLocation.h; sourceTree = "<group>"; };
 		CEE897EF23AB55BDBFE9CCA1 /* InstagramAPITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = InstagramAPITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEE89A411391E371585BAFEA /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		CEE89A6725A9D1C12DA6ACE8 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		CEE89AEC5BA8BC131D1C001B /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
-		CEE89AFADD33A3DA3826B604 /* MapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapViewController.h; sourceTree = "<group>"; };
 		CEE89B9EE26809E7ED53FB61 /* JSONParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONParser.m; sourceTree = "<group>"; };
 		CEE89BCAD474131E4DAA237A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		CEE89C1910C79E1094878E8B /* JSONParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONParser.h; sourceTree = "<group>"; };
 		CEE89C74E7DE320BB34DF7BB /* idea.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = idea.png; sourceTree = "<group>"; };
 		CEE89CF1C96730039067BDB5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		CEE89D0E582E51CB009026AB /* InstagramAPI-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.info; path = "InstagramAPI-Info.plist"; sourceTree = "<group>"; };
+		CEE89D562B6FD65FD0529A67 /* Annotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Annotation.m; sourceTree = "<group>"; };
 		CEE89D57C4D85506EE10A93D /* InstagramAPI-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "InstagramAPI-Prefix.pch"; sourceTree = "<group>"; };
 		CEE89E26D5B77AE553EE81F0 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		CEE89E301EA836170646166F /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		CEE89E337B5A7A80A8F3E5DF /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		CEE89E7732497625D634EA0D /* Annotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Annotation.h; sourceTree = "<group>"; };
 		CEE89EC53588C0CC12F8E1C6 /* TagParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagParser.h; sourceTree = "<group>"; };
 		CEE89F7E0C09DA46B0FEF8F8 /* InstagramAPI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InstagramAPI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -163,6 +169,10 @@
 				7DE5BE8A1929DB4F003AC52A /* PhotoPost.m */,
 				7DE5BE8B1929DB4F003AC52A /* PhotoPost+MockData.h */,
 				7DE5BE8C1929DB50003AC52A /* PhotoPost+MockData.m */,
+				CEE89D562B6FD65FD0529A67 /* Annotation.m */,
+				CEE89E7732497625D634EA0D /* Annotation.h */,
+				CEE89189F36506C0201AC721 /* PhotoLocation.m */,
+				CEE89771A99194B232431727 /* PhotoLocation.h */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -187,8 +197,8 @@
 				7DE5BE9E1929DB84003AC52A /* CommentsViewController.m */,
 				7DD01838192386CC00A844FF /* SearchViewController.h */,
 				7DD01839192386CC00A844FF /* SearchViewController.m */,
-				CEE891068BC76EECB68D956C /* MapViewController.m */,
-				CEE89AFADD33A3DA3826B604 /* MapViewController.h */,
+				CEE89116AB9E7542C9280EA3 /* MapViewController.m */,
+				CEE89075B461B916B2B759F1 /* MapViewController.h */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -396,7 +406,9 @@
 				7DE5BE961929DB66003AC52A /* DownloadManager.m in Sources */,
 				CEE89709C4360A3545EFC16E /* TagParser.m in Sources */,
 				CEE8994B212091BECB40A364 /* JSONParser.m in Sources */,
-				CEE89D2D6C3FC7B48F050CAE /* MapViewController.m in Sources */,
+				CEE8935CAFE5F7A345D28C05 /* MapViewController.m in Sources */,
+				CEE89C1CFC20AC8EFA5B999B /* Annotation.m in Sources */,
+				CEE893612B407785D9A90579 /* PhotoLocation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

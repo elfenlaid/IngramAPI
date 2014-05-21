@@ -13,7 +13,7 @@ static const NSUInteger maxLikesCount = 1000000;
 
     NSUInteger likesCount = [self randomLikesCount];
 
-    return [PhotoPost postWithCountLikes:likesCount thumbnailURL:imageURL standardResolutionURL:imageURL fullName:[imageURL.lastPathComponent componentsSeparatedByString:@"."][0] commentsArray:nil ];
+    return [PhotoPost postWithCountLikes:likesCount thumbnailURL:imageURL standardResolutionURL:imageURL fullName:[imageURL.lastPathComponent componentsSeparatedByString:@"."][0] commentsArray:nil location:nil ];
 }
 
 + (NSUInteger)randomLikesCount

@@ -7,8 +7,8 @@
 #import "JSONParser.h"
 
 
-//static NSString *const FormatURLForJSON = @"https://api.instagram.com/v1/tags/%@/media/recent?min_id=50&client_id=6834e58e8bdf4534ad8c58ca46b26dd6";
-static NSString *const FormatURLForJSON = @"https://api.instagram.com/v1/media/popular?min_id=50&client_id=6834e58e8bdf4534ad8c58ca46b26dd6";
+static NSString *const FormatURLForJSON = @"https://api.instagram.com/v1/tags/%@/media/recent?min_id=50&client_id=6834e58e8bdf4534ad8c58ca46b26dd6";
+//static NSString *const FormatURLForJSON = @"https://api.instagram.com/v1/media/popular?min_id=50&client_id=6834e58e8bdf4534ad8c58ca46b26dd6";
 
 @interface DataLoader()
 {

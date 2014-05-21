@@ -7,6 +7,7 @@ static const float indentSaveButton = 10;
 #define INDENT_NAME 5
 #define INDENT_ACCESSORY_TYPE 20
 #define LIKES_SIZE 20
+#define CORNER_RADIUS 5
 
 
 @interface TableCell()<UIScrollViewDelegate>
@@ -82,7 +83,7 @@ static const float indentSaveButton = 10;
 {
    _imageView = [[UIImageView alloc] init];
 
-   _imageView.layer.cornerRadius = 5;
+   _imageView.layer.cornerRadius = CORNER_RADIUS;
    _imageView.clipsToBounds = YES;
 
     [_scrollView addSubview:_imageView];

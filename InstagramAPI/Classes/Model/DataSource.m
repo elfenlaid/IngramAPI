@@ -8,6 +8,7 @@
 }
 
 @property (nonatomic, strong) NSArray *dataArray;
+
 @end
 
 @implementation DataSource
@@ -22,8 +23,14 @@
     return self;
 }
 
-- (PhotoPost *)objectAtIndexPath:(NSIndexPath *)path {
+- (PhotoPost *)objectAtIndexPath:(NSIndexPath *)path
+{
     return self.dataArray[(NSUInteger) path.row];
+}
+
+- (PhotoPost *)objectAtIndex:(NSUInteger)index
+{
+    return self.dataArray[index];
 }
 
 

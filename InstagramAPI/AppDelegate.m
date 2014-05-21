@@ -10,6 +10,7 @@
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 
+
     SearchViewController *searchViewController = [[SearchViewController alloc] init];
 
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:searchViewController];
