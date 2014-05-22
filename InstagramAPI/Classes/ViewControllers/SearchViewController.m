@@ -196,6 +196,13 @@ static const int mockPostsCount = 300;
     [_mapViewController removeFromParentViewController];
 }
 
+-(void)updateDataSource
+{
+    NSLog(@"UPDATES");
+
+
+}
+
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
     [_searchBar resignFirstResponder];
@@ -218,6 +225,13 @@ static const int mockPostsCount = 300;
     PhotoPost *post = [_dataSource objectAtIndexPath:indexPath];
 
     [cell setupWithPost:post];
+
+    BOOL isNeedShowNextCells = indexPath.row == [_dataSource count] - 1;
+
+    if (isNeedShowNextCells)
+    {
+        [self updateDataSource];
+    }
 
     return cell;
 }
@@ -244,6 +258,7 @@ static const int mockPostsCount = 300;
     [_activityIndicator startAnimating];
     [_noResult removeFromSuperview];
     [_tableView removeFromSuperview];
+    _dataSource = nil;
 
 #if SHOW_FAKE_PHOTOS
 
@@ -285,29 +300,28 @@ static const int mockPostsCount = 300;
 
 - (void)dataLoaderCallback:(NSArray *)array
 {
-    [self showSearchViewController];
+        [self showSearchViewController];
 
-    [_activityIndicator stopAnimating];
+        [_activityIndicator stopAnimating];
 
-    _dataSource = [[DataSource alloc] initWithArray:array];
+        _dataSource = [[DataSource alloc] initWithArray:array];
 
-    if(array.count > 0)
-    {
-        [self setupTableViewConfigure];
-    }
-    else
-    {
-        [self setNoResultConfigureWithText:@"Sorry,\n can't find \nanything :("];
+        if (array.count > 0) {
+            [self setupTableViewConfigure];
+        }
+        else
+        {
+            [self setNoResultConfigureWithText:@"Sorry,\n can't find \nanything :("];
+        }
 
-    }
+        [_mapViewController reloadAnnotationsWithDataSource:_dataSource];
 
-    [_mapViewController reloadAnnotationsWithDataSource:_dataSource];
+        BOOL isNeedShowMap = _segmentedControl.selectedSegmentIndex == 0;
+        if (isNeedShowMap) {
+            [self showMapViewController];
+        }
 
-    BOOL isNeedShowMap = _segmentedControl.selectedSegmentIndex == 0;
-    if (isNeedShowMap)
-    {
-       [self showMapViewController];
-    }
+
 }
 
 @end

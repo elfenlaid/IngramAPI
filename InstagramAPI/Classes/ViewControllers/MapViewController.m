@@ -46,6 +46,7 @@ static const CGFloat heightAnnotaionPhoto = 40;
 
 -(void)setupMap
 {
+
     _map = [[MKMapView alloc] initWithFrame:self.view.frame];
     _map.showsUserLocation = YES;
     _map.delegate = self;
