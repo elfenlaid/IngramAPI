@@ -1,15 +1,24 @@
 #import <Foundation/Foundation.h>
 
 @class PhotoPost;
+@class Page;
 
 @interface DataSource : NSObject
 
-- (id)initWithArray:(NSArray *)array;
++ (instancetype)sourceWithPages:(NSArray *)pages;
 
-- (PhotoPost *)objectAtIndexPath:(NSIndexPath *)path;
+- (instancetype)initWithPages:(NSArray *)pages;
 
-- (PhotoPost *)objectAtIndex:(NSUInteger)index1;
+- (PhotoPost *)objectAtIndexPath:(NSIndexPath *)indexPath;
 
-- (NSInteger)count;
+- (NSInteger)numberOfPhotoAtSection:(NSInteger)section;
+
+- (NSInteger)numberOfPages;
+
+- (NSURL *)nextURL;
+
+- (BOOL)isEmpty;
+
+- (void)fetchNextPage:(Page *)page;
 
 @end

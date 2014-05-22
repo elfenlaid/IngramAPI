@@ -2,12 +2,12 @@
 #import "TagParser.h"
 #import "PhotoComment.h"
 #import "PhotoPost.h"
+#import "Page.h"
 #import "PhotoLocation.h"
-
 
 @implementation JSONParser
 
-+(NSArray *)parseJSONFromDictionary:(NSDictionary *)json
++(Page *)parseJSONFromDictionary:(NSDictionary *)json
 {
     NSArray *data = json[@"data"];
 
@@ -64,7 +64,12 @@
         [array addObject:photoPost];
     }
 
-    return [array copy];
+    NSString *pathForNextURL = json[@"pagination"][@"next_url"];
+    NSURL *nextURL = [NSURL URLWithString:pathForNextURL];
+
+    Page *page = [Page pageWithNextURL:nextURL posts:[array copy]];
+
+    return page;
 }
 
 

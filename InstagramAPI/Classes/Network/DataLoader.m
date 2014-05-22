@@ -1,14 +1,13 @@
 #import "DataLoader.h"
 #import "DataLoadConnection.h"
 #import "PhotoPost.h"
+#import "Page.h"
 #import "DownloadManager.h"
 #import "PhotoComment.h"
 #import "TagParser.h"
 #import "JSONParser.h"
+#import "Page.h"
 
-
-static NSString *const FormatURLForJSON = @"https://api.instagram.com/v1/tags/%@/media/recent?client_id=6834e58e8bdf4534ad8c58ca46b26dd6";
-//static NSString *const FormatURLForJSON = @"https://api.instagram.com/v1/media/popular?min_id=50&client_id=6834e58e8bdf4534ad8c58ca46b26dd6";
 
 @interface DataLoader()
 {
@@ -22,26 +21,22 @@ static NSString *const FormatURLForJSON = @"https://api.instagram.com/v1/tags/%@
 @implementation DataLoader
 
 
-- (void)loadDataArrayForQuery:(NSString *)query withCallback:(DataLoaderCallback)callback
+- (void)loadDataArrayForQueryURL:(NSURL *)query withCallback:(DataLoaderCallback)callback
 {
 
     _callback = callback ;
 
-    NSString *fullFileURL = [NSString stringWithFormat:FormatURLForJSON,query];
-
-    NSURL *url = [NSURL URLWithString:fullFileURL];
-
-    DataLoadConnection *dataLoadConnection = [[DataLoadConnection alloc] initWithURL:url
+    DataLoadConnection *dataLoadConnection = [[DataLoadConnection alloc] initWithURL:query
                                                                             callback:^(DataLoadConnection *connection,NSError *error){
-                                                                               if(!error)
-                                                                               {
-                                                                                   [self dataLoadConnectionCallback:connection];
-                                                                               }else{
-                                                                                   if (_callback) _callback(nil,error);
-                                                                                   _callback = nil;
-                                                                               }
+                if(!error)
+                {
+                    [self dataLoadConnectionCallback:connection];
+                }else{
+                    if (_callback) _callback(nil,error);
+                    _callback = nil;
+                }
 
-                                                                            }];
+            }];
     [DownloadManager addOperation:dataLoadConnection];
 
 }
@@ -52,14 +47,14 @@ static NSString *const FormatURLForJSON = @"https://api.instagram.com/v1/tags/%@
 
         NSError *error;
         NSDictionary *json = [NSJSONSerialization JSONObjectWithData:connection.downloadData
-                                                             options:(NSJSONReadingOptions) kNilOptions
+                                                             options:(NSJSONReadingOptions)kNilOptions
                                                                error:&error];
 
-        NSArray *array = [JSONParser parseJSONFromDictionary:json];
+        Page *page = [JSONParser parseJSONFromDictionary:json];
 
         if (_callback) {
             dispatch_sync(dispatch_get_main_queue(), ^{
-                _callback(array,nil);
+                _callback(page,nil);
             });
         }
 

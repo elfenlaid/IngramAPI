@@ -4,7 +4,8 @@ static NSString *const hashRegexp = @"(#\\w+)";
 
 @implementation TagParser
 
-+ (NSArray *)extractTagsFromString:(NSString *)text {
++ (NSArray *)extractTagsFromString:(NSString *)text
+{
 
     NSArray *tags = [self parseStringToArrayTags:text];
 
@@ -29,7 +30,8 @@ static NSString *const hashRegexp = @"(#\\w+)";
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:hashRegexp
                                                                            options:NSRegularExpressionCaseInsensitive
                                                                              error:&error];
-    if (error) {
+    if (error)
+    {
         NSLog(@"Failed to parse <%@> with error: %@", text, [error localizedDescription]);
         return nil;
     }

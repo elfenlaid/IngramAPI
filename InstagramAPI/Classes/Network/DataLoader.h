@@ -1,10 +1,11 @@
 #import <Foundation/Foundation.h>
 
+@class Page;
 
-typedef void (^DataLoaderCallback)(NSArray *, NSError *);
+typedef void (^DataLoaderCallback)(Page *, NSError *);
 
 @interface DataLoader : NSObject
 
-- (void)loadDataArrayForQuery:(NSString *)query withCallback:(DataLoaderCallback)callback;
+- (void)loadDataArrayForQueryURL:(NSURL *)query withCallback:(DataLoaderCallback)callback;
 
 @end

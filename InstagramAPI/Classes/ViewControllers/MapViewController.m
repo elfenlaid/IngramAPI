@@ -60,16 +60,23 @@ static const CGFloat heightAnnotaionPhoto = 40;
 
     [_map removeAnnotations:_map.annotations];
 
-    for (NSUInteger i = 0; i < _dataSource.count; i++)
-    {
-        PhotoPost *post = [_dataSource objectAtIndex:i];
+    NSInteger amountSections = _dataSource.numberOfPages;
 
-        Annotation *annotation = [[Annotation alloc] init];
-        annotation.title = post.fullName;
-        annotation.subtitle = [NSString stringWithFormat:@"likes:%i (comments:%i)",post.countLikes,post.commentsArray.count];
-        annotation.coordinate = CLLocationCoordinate2DMake(post.location.latitude, post.location.longitude);
-        annotation.indexAtDataSource = i;
-        [_map addAnnotation:annotation];
+    for (NSInteger currentSection = 0; currentSection < amountSections; currentSection++)
+    {
+        NSInteger amountRows = [_dataSource numberOfPhotoAtSection:currentSection];
+
+        for (NSInteger row = 0 ; row < amountRows; row++)
+        {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:currentSection];
+            PhotoPost *post = [_dataSource objectAtIndexPath:indexPath];
+            Annotation *annotation = [[Annotation alloc] init];
+            annotation.title = post.fullName;
+            annotation.subtitle = [NSString stringWithFormat:@"likes:%i (comments:%i)", post.countLikes, post.commentsArray.count];
+            annotation.coordinate = CLLocationCoordinate2DMake(post.location.latitude, post.location.longitude);
+            annotation.indexPathAtDataSource = indexPath;
+            [_map addAnnotation:annotation];
+        }
     }
 
 }
@@ -129,7 +136,7 @@ static const CGFloat heightAnnotaionPhoto = 40;
 
         annotationView.leftCalloutAccessoryView =  leftImage;
         Annotation *custom= (Annotation *)annotation;
-        PhotoPost *post = [_dataSource objectAtIndex:custom.indexAtDataSource];
+        PhotoPost *post = [_dataSource objectAtIndexPath:custom.indexPathAtDataSource];
         NSURL *imageURL = post.thumbnailURL;
 
         dispatch_async(dispatch_get_global_queue(0, 0),^{
@@ -148,8 +155,8 @@ static const CGFloat heightAnnotaionPhoto = 40;
 -(void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
 {
     Annotation *annotation = (Annotation *) view.annotation;
-    NSUInteger index = annotation.indexAtDataSource;
-    PhotoPost *post = [_dataSource objectAtIndex:index];
+    NSIndexPath * indexPath = annotation.indexPathAtDataSource;
+    PhotoPost *post = [_dataSource objectAtIndexPath:indexPath];
     CommentsViewController *controller = [[CommentsViewController alloc] initWithCommentsArray:post.commentsArray];
     [self.navigationController pushViewController:controller animated:YES];
 }

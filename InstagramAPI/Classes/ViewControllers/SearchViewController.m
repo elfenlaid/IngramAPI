@@ -6,23 +6,19 @@
 #import "TableCell+PhotoPost.h"
 #import "CommentsViewController.h"
 #import "MapViewController.h"
-#import "PhotoLocation.h"
+#import "Page.h"
+
+
+static NSString *const FormatURLForJSON = @"https://api.instagram.com/v1/tags/%@/media/recent?client_id=6834e58e8bdf4534ad8c58ca46b26dd6";
+//static NSString *const FormatURLForJSON = @"https://api.instagram.com/v1/media/popular?min_id=50&client_id=6834e58e8bdf4534ad8c58ca46b26dd6";
 
 static NSString *const cellIdentifier = @"cellIdentifier";
-
 static const int mockPostsCount = 300;
+
 #define HEIGHT_NAVIGATION_CONTROLLER 64
-#define NUMBER_OF_SECTION 1
 #define HEIGHT_CELL 60
 #define HEIGHT_KEYBOARD 215
 #define HEIGHT_SEGMENT_CONTROLL 25
-
-#if DEBUG
-#define SHOW_FAKE_PHOTOS 0
-#import "PhotoPost+MockData.h"
-#else
-#define SHOW_FAKE_PHOTOS 0
-#endif
 
 @interface SearchViewController()<UITableViewDataSource,UITableViewDelegate,UISearchBarDelegate>
 {
@@ -198,8 +194,19 @@ static const int mockPostsCount = 300;
 
 -(void)updateDataSource
 {
-    NSLog(@"UPDATES");
+    NSURL *nextUpdateURL = [_dataSource nextURL];
 
+    [_dataLoader loadDataArrayForQueryURL:nextUpdateURL withCallback:^(Page *page,NSError *error){
+        if (!error)
+        {
+            [self dataLoaderCallbackForUpdate:page];
+        }
+        else
+        {
+            NSLog(@"trouble:%@", error.localizedDescription);
+            return;
+        }
+    }];
 
 }
 
@@ -208,33 +215,46 @@ static const int mockPostsCount = 300;
     [_searchBar resignFirstResponder];
 }
 
-#pragma mark - table view dataSource methods
-
--(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+-(void)tryUpdateWithIndexPath:(NSIndexPath *)indexPath
 {
-    return NUMBER_OF_SECTION;
-}
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return _dataSource.count;
-}
+    NSInteger lastSections = _dataSource.numberOfPages -1;
+    NSInteger lastRows = [_dataSource numberOfPhotoAtSection:lastSections]/2;
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-
-    TableCell *cell = (TableCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-    PhotoPost *post = [_dataSource objectAtIndexPath:indexPath];
-
-    [cell setupWithPost:post];
-
-    BOOL isNeedShowNextCells = indexPath.row == [_dataSource count] - 1;
-
-    if (isNeedShowNextCells)
+    BOOL isUpdate = indexPath == [NSIndexPath indexPathForRow:lastRows inSection: lastSections];
+    if (isUpdate)
     {
         [self updateDataSource];
     }
 
+}
+
+#pragma mark - table view dataSource methods
+
+-(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return [_dataSource numberOfPages];
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return [_dataSource numberOfPhotoAtSection:section];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+
+    TableCell *cell = (TableCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+
+    PhotoPost *post = [_dataSource objectAtIndexPath:indexPath];
+
+    [cell setupWithPost:post];
+
+    [self tryUpdateWithIndexPath:indexPath];
+
     return cell;
 }
+
 
 #pragma mark - table view delegate methods
 
@@ -258,34 +278,26 @@ static const int mockPostsCount = 300;
     [_activityIndicator startAnimating];
     [_noResult removeFromSuperview];
     [_tableView removeFromSuperview];
+
     _dataSource = nil;
 
-#if SHOW_FAKE_PHOTOS
+    NSURL *queryURL = [NSURL URLWithString:[NSString stringWithFormat:FormatURLForJSON,searchText]];
 
-    [_activityIndicator stopAnimating];
-
-    NSMutableArray *posts = [NSMutableArray array];
-    for (int i = 0; i < mockPostsCount; i++)
-    {
-        [posts addObject:[PhotoPost randomMockPost]];
-    }
-
-    [self dataLoaderCallback:posts];
-
-    #else
-
-    [_dataLoader loadDataArrayForQuery:searchText withCallback:^(NSArray *array,NSError *error){
-        if (!error) {
-            [self dataLoaderCallback:array];
-        } else {
-            NSLog(@"%@",error.localizedDescription);
+    [_dataLoader loadDataArrayForQueryURL:queryURL withCallback:^(Page *page, NSError *error){
+        if (!error)
+        {
+            [self dataLoaderCallback:page];
+        }
+        else
+        {
+            NSLog(@"%@", error.localizedDescription);
             [self setNoResultConfigureWithText:error.localizedDescription];
             [_activityIndicator stopAnimating];
             return;
         }
     }];
 
-#endif
+
 }
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
@@ -298,28 +310,45 @@ static const int mockPostsCount = 300;
     _tableView.frame = [self tableRectWithExistKeyboard];
 }
 
-- (void)dataLoaderCallback:(NSArray *)array
+#pragma mark - data loader callbacks
+
+- (void)dataLoaderCallback:(Page *)page
 {
-        [self showSearchViewController];
+    [self showSearchViewController];
 
-        [_activityIndicator stopAnimating];
+    [_activityIndicator stopAnimating];
 
-        _dataSource = [[DataSource alloc] initWithArray:array];
+    _dataSource = [DataSource sourceWithPages:[NSArray arrayWithObject:page]];
 
-        if (array.count > 0) {
-            [self setupTableViewConfigure];
-        }
-        else
-        {
-            [self setNoResultConfigureWithText:@"Sorry,\n can't find \nanything :("];
-        }
 
-        [_mapViewController reloadAnnotationsWithDataSource:_dataSource];
+    if (![_dataSource isEmpty]) {
+        [self setupTableViewConfigure];
+    }
+    else {
+        [self setNoResultConfigureWithText:@"Sorry,\n can't find \nanything :("];
+    }
 
-        BOOL isNeedShowMap = _segmentedControl.selectedSegmentIndex == 0;
-        if (isNeedShowMap) {
-            [self showMapViewController];
-        }
+    [_mapViewController reloadAnnotationsWithDataSource:_dataSource];
+
+    BOOL isNeedShowMap = _segmentedControl.selectedSegmentIndex == 0;
+
+    if (isNeedShowMap) {
+        [self showMapViewController];
+    }
+}
+
+- (void)dataLoaderCallbackForUpdate:(Page *)page
+{
+    [_dataSource fetchNextPage:page];
+
+    [_mapViewController reloadAnnotationsWithDataSource:_dataSource];
+
+    NSIndexSet *set = [NSIndexSet indexSetWithIndex:((NSUInteger)_dataSource.numberOfPages - 1)];
+
+    [_tableView beginUpdates];
+    [_tableView insertSections:set withRowAnimation:UITableViewRowAnimationBottom];
+    [_tableView endUpdates];
+
 
 
 }

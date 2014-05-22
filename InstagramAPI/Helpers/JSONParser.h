@@ -1,7 +1,10 @@
 #import <Foundation/Foundation.h>
 
+@class Page;
+
 
 @interface JSONParser : NSObject
 
-+ (NSArray *)parseJSONFromDictionary:(NSDictionary *)dictionary;
++ (Page *)parseJSONFromDictionary:(NSDictionary *)dictionary;
+
 @end
