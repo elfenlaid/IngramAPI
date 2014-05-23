@@ -38,8 +38,6 @@ static const CGFloat heightAnnotaionPhoto = 40;
 
     [self setupMap];
     [self setupSegmentedControl];
-    //sdfgsdffhg
-
 }
 
 #pragma mark - internal methods
@@ -92,7 +90,7 @@ static const CGFloat heightAnnotaionPhoto = 40;
     CGRect segmentFrame = CGRectMake(50,10+heightNavigationController, CGRectGetWidth(self.view.bounds)-100,heightSegmentControl);
     segmentedControl.frame = segmentFrame;
     segmentedControl.selectedSegmentIndex = 0;
-    [segmentedControl setTintColor:[UIColor grayColor]];
+    [segmentedControl setTintColor:[UIColor blackColor]];
 
     [self.view addSubview:segmentedControl];
 
@@ -159,6 +157,9 @@ static const CGFloat heightAnnotaionPhoto = 40;
     PhotoPost *post = [_dataSource objectAtIndexPath:indexPath];
     CommentsViewController *controller = [[CommentsViewController alloc] initWithCommentsArray:post.commentsArray];
     [self.navigationController pushViewController:controller animated:YES];
+
+
+
 }
 
 @end

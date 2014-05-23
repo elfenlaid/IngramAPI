@@ -37,7 +37,7 @@ static const float indentSaveButton = 10;
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
 
-        self.accessoryType  = UITableViewCellAccessoryDisclosureIndicator;
+        //self.accessoryType  = UITableViewCellAccessoryDisclosureIndicator;
         self.selectionStyle = UITableViewCellSelectionStyleNone;
 
         [self setupScrollView];
@@ -265,15 +265,17 @@ static const float indentSaveButton = 10;
 - (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo: (void *) contextInfo
 {
 
-    NSString *message = error?@"FAIL":@"SUCCESSFUL";
-
-
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:message
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"FAIL"
                                                         message:error.localizedDescription
                                                        delegate:nil
                                               cancelButtonTitle:@"OK"
                                               otherButtonTitles:nil];
+
+    if (error)
+    {
     [alertView show];
+    }
+
 }
 
 

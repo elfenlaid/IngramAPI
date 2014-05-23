@@ -27,6 +27,7 @@
     {
         _nextURL = nextURL;
         _posts = posts;
+        ////Sroik
     }
 
     return self;

@@ -52,7 +52,6 @@ static const int mockPostsCount = 300;
     [self setupSearchConfigure];
     [self setupActivityIndicatorConfigure];
     [self setupSegmentedControl];
-
     [self setupMapViewController];
 
 }
@@ -70,6 +69,12 @@ static const int mockPostsCount = 300;
 -(void)setupMapViewController
 {
     _mapViewController = [[MapViewController alloc]  init];
+
+    [_mapViewController willMoveToParentViewController:self];
+    [self addChildViewController:_mapViewController];
+    [self.view addSubview:_mapViewController.view];
+    [_mapViewController didMoveToParentViewController:self];
+    _mapViewController.view.alpha = 0;
 }
 
 -(void)setupTableViewConfigure
@@ -84,7 +89,7 @@ static const int mockPostsCount = 300;
 
     [_tableView registerClass:[TableCell class] forCellReuseIdentifier:cellIdentifier];
 
-    [self.view addSubview:_tableView];
+    [self.view insertSubview:_tableView atIndex:0];
 }
 
 -(void)setupActivityIndicatorConfigure
@@ -125,7 +130,9 @@ static const int mockPostsCount = 300;
     {
         tableRect = CGRectMake(0, 0,CGRectGetWidth(self.view.bounds),
                 CGRectGetHeight(self.view.bounds) - HEIGHT_KEYBOARD);
-    } else {
+    }
+    else
+    {
         tableRect = CGRectMake(0,0,CGRectGetWidth(self.view.bounds),
                 CGRectGetHeight(self.view.bounds));
     }
@@ -178,18 +185,20 @@ static const int mockPostsCount = 300;
 
 -(void)showMapViewController
 {
-    [_mapViewController willMoveToParentViewController:self];
-    [self addChildViewController:_mapViewController];
-    [self.view addSubview:_mapViewController.view];
-    [_mapViewController didMoveToParentViewController:self];
+    _mapViewController.view.alpha = 1;
+//    [_mapViewController willMoveToParentViewController:self];
+//    [self addChildViewController:_mapViewController];
+//    [self.view addSubview:_mapViewController.view];
+//    [_mapViewController didMoveToParentViewController:self];
 
 }
 
 -(void)showSearchViewController
 {
-    [_mapViewController willMoveToParentViewController:nil];
-    [_mapViewController.view removeFromSuperview];
-    [_mapViewController removeFromParentViewController];
+    _mapViewController.view.alpha = 0;
+//    [_mapViewController willMoveToParentViewController:nil];
+//    [_mapViewController.view removeFromSuperview];
+//    [_mapViewController removeFromParentViewController];
 }
 
 -(void)updateDataSource
@@ -324,7 +333,8 @@ static const int mockPostsCount = 300;
     if (![_dataSource isEmpty]) {
         [self setupTableViewConfigure];
     }
-    else {
+    else
+    {
         [self setNoResultConfigureWithText:@"Sorry,\n can't find \nanything :("];
     }
 
@@ -332,7 +342,8 @@ static const int mockPostsCount = 300;
 
     BOOL isNeedShowMap = _segmentedControl.selectedSegmentIndex == 0;
 
-    if (isNeedShowMap) {
+    if (isNeedShowMap)
+    {
         [self showMapViewController];
     }
 }
@@ -348,8 +359,6 @@ static const int mockPostsCount = 300;
     [_tableView beginUpdates];
     [_tableView insertSections:set withRowAnimation:UITableViewRowAnimationBottom];
     [_tableView endUpdates];
-
-
 
 }
 
