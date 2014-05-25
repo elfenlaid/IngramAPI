@@ -7,6 +7,7 @@
 #import "CommentsViewController.h"
 #import "MapViewController.h"
 #import "Page.h"
+#import "DownloadManager.h"
 
 
 static NSString *const FormatURLForJSON = @"https://api.instagram.com/v1/tags/%@/media/recent?client_id=6834e58e8bdf4534ad8c58ca46b26dd6";
@@ -47,6 +48,8 @@ static const int mockPostsCount = 300;
 -(void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.automaticallyAdjustsScrollViewInsets = NO;
 
     [self setupDataLoaderConfigure];
     [self setupSearchConfigure];
@@ -186,19 +189,11 @@ static const int mockPostsCount = 300;
 -(void)showMapViewController
 {
     _mapViewController.view.alpha = 1;
-//    [_mapViewController willMoveToParentViewController:self];
-//    [self addChildViewController:_mapViewController];
-//    [self.view addSubview:_mapViewController.view];
-//    [_mapViewController didMoveToParentViewController:self];
-
 }
 
 -(void)showSearchViewController
 {
     _mapViewController.view.alpha = 0;
-//    [_mapViewController willMoveToParentViewController:nil];
-//    [_mapViewController.view removeFromSuperview];
-//    [_mapViewController removeFromParentViewController];
 }
 
 -(void)updateDataSource
@@ -229,8 +224,7 @@ static const int mockPostsCount = 300;
 
     NSInteger lastSections = _dataSource.numberOfPages -1;
     NSInteger lastRows = [_dataSource numberOfPhotoAtSection:lastSections]/2;
-
-    BOOL isUpdate = indexPath == [NSIndexPath indexPathForRow:lastRows inSection: lastSections];
+    BOOL isUpdate = ((indexPath.row == lastRows) && (indexPath.section==lastSections));
     if (isUpdate)
     {
         [self updateDataSource];

@@ -6,4 +6,6 @@
 
 + (void)addOperation:(DataLoadConnection*)dataLoadConnection;
 
++ (void)cancelAllOperations;
+
 @end

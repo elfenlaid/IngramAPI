@@ -11,6 +11,4 @@ typedef void(^DataLoadConnectionCallback)(DataLoadConnection*,NSError *);
 
 - (id)initWithURL:(NSURL *)url callback:(DataLoadConnectionCallback)callback;
 
-- (void)cancelDownload;
-
 @end

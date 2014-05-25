@@ -28,6 +28,11 @@
     [[self sharedManager].queue addOperation:dataLoadConnection];
 }
 
++(void)cancelAllOperations
+{
+    [[self sharedManager].queue cancelAllOperations];
+}
+
 
 #pragma  mark - public methods
 

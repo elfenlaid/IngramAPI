@@ -47,6 +47,18 @@
     }
 }
 
+-(void)cancel
+{
+
+    [super cancel];
+
+    [self cancelDownload];
+
+    self.isFinished = YES;
+    self.isExecuting = NO;
+    [_port removeFromRunLoop:_runLoop forMode:NSDefaultRunLoopMode];
+}
+
 -(void)cancelDownload
 {
     [_urlConnection cancel];
@@ -71,7 +83,6 @@
 
     [self cancelDownload];
     [self startAsync];
-
 }
 
 - (void)setIsExecuting:(BOOL)isExecuting {
@@ -86,8 +97,9 @@
     [self didChangeValueForKey:@"isFinished"];
 }
 
-- (BOOL)isConcurrent {
-    return YES;
+- (BOOL)isConcurrent
+{
+    return NO;
 }
 
 -(BOOL)isFinished

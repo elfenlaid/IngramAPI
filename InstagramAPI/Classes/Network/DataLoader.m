@@ -25,8 +25,8 @@
 {
 
     _callback = callback ;
-
-    DataLoadConnection *dataLoadConnection = [[DataLoadConnection alloc] initWithURL:query
+    [self.dataLoadConnection cancel];
+    self.dataLoadConnection = [[DataLoadConnection alloc] initWithURL:query
                                                                             callback:^(DataLoadConnection *connection,NSError *error){
                 if(!error)
                 {
@@ -37,7 +37,7 @@
                 }
 
             }];
-    [DownloadManager addOperation:dataLoadConnection];
+    [DownloadManager addOperation:self.dataLoadConnection];
 
 }
 

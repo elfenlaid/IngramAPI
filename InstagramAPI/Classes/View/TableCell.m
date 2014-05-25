@@ -1,7 +1,7 @@
 #import "TableCell.h"
 
 
-static const float indentSaveButton = 10;
+static const float indentSaveButton = 20;
 
 #define INDENT_IMAGE 3
 #define INDENT_NAME 5
@@ -10,15 +10,13 @@ static const float indentSaveButton = 10;
 #define CORNER_RADIUS 5
 
 
-@interface TableCell()<UIScrollViewDelegate>
+@interface TableCell()<UIGestureRecognizerDelegate>
 {
 
 }
 
-@property (nonatomic, strong) UIScrollView *scrollView;
-@property (nonatomic, strong) UIButton *saveButton;
-@property (nonatomic, strong) UIView *scrollBackgroundView;
-@property  (nonatomic) BOOL isHiddenSaveButton;
+@property (nonatomic,strong) UIButton *saveButton;
+@property (nonatomic) BOOL isHiddenSaveButton;
 
 @end
 
@@ -31,16 +29,17 @@ static const float indentSaveButton = 10;
     UIImageView *_likeImageView;
     UILabel *_countCommentlabel;
     NSURL *_imageURL;
+
+
 }
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+{
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
 
-        //self.accessoryType  = UITableViewCellAccessoryDisclosureIndicator;
-        self.selectionStyle = UITableViewCellSelectionStyleNone;
-
-        [self setupScrollView];
+        self.accessoryType  = UITableViewCellAccessoryDisclosureIndicator;
+        self.selectionStyle = UITableViewCellSelectionStyleGray;
 
         [self setupImageLikesConfigure];
         [self setupImageView];
@@ -48,45 +47,77 @@ static const float indentSaveButton = 10;
         [self setupNameConfigure];
         [self setupActivityIndicatorConfigure];
         [self setupCountCommentLabel];
-
+        [self setupGestureRecognizers];
+        [self setupSaveButton];
     }
     return self;
 }
 
 #pragma mark - internals methods
 
- -(void)setupScrollView
- {
-     _saveButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-     _saveButton.backgroundColor = [UIColor grayColor];
-     [_saveButton setTitle:@"SAVE" forState:UIControlStateNormal];
-     [_saveButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-     [_saveButton sizeToFit];
-     _isHiddenSaveButton = YES;
+-(void)setupSaveButton
+{
+    _saveButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    _saveButton.backgroundColor = [UIColor grayColor];
+    [_saveButton setTitle:@"save" forState:UIControlStateNormal];
+    [_saveButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    _isHiddenSaveButton = YES;
 
-     [self.contentView addSubview:self.saveButton];
+    [self addSubview:_saveButton];
+}
 
-     _scrollBackgroundView = [[UIView alloc]  init];
-     _scrollBackgroundView.backgroundColor = [UIColor whiteColor];
+- (void)setupGestureRecognizers
+{
+    UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panRecognizer:)];
+    panRecognizer.delegate = self;
+
+    [self addGestureRecognizer:panRecognizer];
+}
 
 
-     _scrollView = [[UIScrollView alloc] init];
-     _scrollView.delegate = self;
-     _scrollView.showsHorizontalScrollIndicator = NO;
+-(IBAction)panRecognizer:(UIPanGestureRecognizer *)recognizer
+{
 
-     [self.contentView addSubview:_scrollView];
-     [_scrollView addSubview:_scrollBackgroundView];
+    if(recognizer.state == UIGestureRecognizerStateEnded)
+    {
+        [UIView animateWithDuration:0.25f animations:^{
+            self.frame = (CGRect){CGPointMake(0, self.frame.origin.y),self.frame.size};
+            _isHiddenSaveButton = YES;
+            [self downloadImage];
+        }];
+        return;
+    }
 
- }
+    CGFloat translationCell = [recognizer translationInView:self].x;
+    translationCell = translationCell > 0 ? translationCell:0;
+    self.frame =  (CGRect){CGPointMake(translationCell, self.frame.origin.y),self.frame.size};
+
+    CGFloat positionSaveButton = _isHiddenSaveButton? -CGRectGetWidth(_saveButton.frame):0;
+    CGRect saveButtonRect = (CGRect){CGPointMake(-translationCell+positionSaveButton,0),_saveButton.frame.size};
+
+    _saveButton.frame = saveButtonRect;
+
+    BOOL isNeedHiddenSaveButton = translationCell < CGRectGetWidth(_saveButton.frame) + indentSaveButton;
+    if (isNeedHiddenSaveButton != _isHiddenSaveButton)
+    {
+        _isHiddenSaveButton = !_isHiddenSaveButton;
+        positionSaveButton = _isHiddenSaveButton? -CGRectGetWidth(_saveButton.frame):0;
+        saveButtonRect = (CGRect){CGPointMake(-translationCell-positionSaveButton,0),_saveButton.frame.size};
+        [UIView animateWithDuration:0.25f animations:^{
+            _saveButton.frame = saveButtonRect;
+        }];
+    }
+
+}
 
 -(void)setupImageView
 {
-   _imageView = [[UIImageView alloc] init];
+    _imageView = [[UIImageView alloc] init];
 
-   _imageView.layer.cornerRadius = CORNER_RADIUS;
-   _imageView.clipsToBounds = YES;
+    _imageView.layer.cornerRadius = CORNER_RADIUS;
+    _imageView.clipsToBounds = YES;
 
-    [_scrollView addSubview:_imageView];
+    [self addSubview:_imageView];
 }
 
 -(void)setupNameConfigure
@@ -94,9 +125,8 @@ static const float indentSaveButton = 10;
     _nameLabel = [[UILabel alloc]  init];
     _nameLabel.textColor = [UIColor blackColor];
     _nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-//  _nameLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
 
-    [_scrollView addSubview:_nameLabel];
+    [self addSubview:_nameLabel];
 }
 
 -(void)setupLikesConfigure
@@ -106,7 +136,7 @@ static const float indentSaveButton = 10;
     _likesLabel.textColor = [UIColor blackColor];
     _likesLabel.font = [UIFont systemFontOfSize:14.0f];
 
-    [_scrollView addSubview:_likesLabel];
+    [self addSubview:_likesLabel];
 
 }
 
@@ -117,7 +147,7 @@ static const float indentSaveButton = 10;
 
     _likeImageView = imageView;
 
-   [_scrollView addSubview:imageView];
+    [self addSubview:imageView];
 }
 
 -(void)setupCountCommentLabel
@@ -127,7 +157,7 @@ static const float indentSaveButton = 10;
     _countCommentlabel.font = [UIFont systemFontOfSize:13.0f];
     [_countCommentlabel setTextColor:[UIColor grayColor]];
 
-    [_scrollView addSubview:_countCommentlabel];
+    [self addSubview:_countCommentlabel];
 
 }
 
@@ -138,7 +168,7 @@ static const float indentSaveButton = 10;
     _activityIndicator.hidesWhenStopped = YES;
     _activityIndicator.color = [UIColor blackColor];
 
-    [_scrollView addSubview:_activityIndicator];
+    [self addSubview:_activityIndicator];
 }
 
 - (void)layoutSubviews {
@@ -146,13 +176,8 @@ static const float indentSaveButton = 10;
 
     CGFloat height = CGRectGetHeight(self.bounds);
 
-    _saveButton.frame = (CGRect){CGPointZero, {height, height}};
-    _saveButton.center = CGPointMake(-_saveButton.center.x, _saveButton.center.y);
-
-    _scrollView.frame = self.contentView.bounds;
-    _scrollView.contentSize = (CGSize){CGRectGetWidth(self.contentView.bounds) + 1, CGRectGetHeight(self.contentView.bounds)};
-
-    _scrollBackgroundView.frame = _scrollView.bounds;
+    CGRect saveButtonFrame = CGRectMake(-height,0, height, height);
+    _saveButton.frame = saveButtonFrame;
 
     CGFloat heightImage = height - 2* INDENT_IMAGE;
     CGRect imageRect = CGRectMake(INDENT_IMAGE, INDENT_IMAGE, heightImage, heightImage);
@@ -181,12 +206,12 @@ static const float indentSaveButton = 10;
 
 -(void)setNameText:(NSString*)name
 {
-  _nameLabel.text = name;
+    _nameLabel.text = name;
 }
 
 -(void)setLikesCount:(NSInteger)count
 {
-  _likesLabel.text = [NSString stringWithFormat:@"%i",count];
+    _likesLabel.text = [NSString stringWithFormat:@"%i",count];
 }
 
 
@@ -205,43 +230,28 @@ static const float indentSaveButton = 10;
     _imageURL = url;
 }
 
+#pragma mark -  UIGestureRecognizersDelegate methods
 
-#pragma mark - scroll view delegate methods
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-
-    CGPoint contentOffset = scrollView.contentOffset;
-
-    contentOffset.x = -MIN(contentOffset.x, 0);
-
-    CGFloat showSaveImageDelta = CGRectGetWidth(self.saveButton.bounds);
-
-
-    BOOL isNeedToShowSaveButton = (showSaveImageDelta + indentSaveButton) > contentOffset.x;
-
-     if (isNeedToShowSaveButton != _isHiddenSaveButton)
-     {
-       _isHiddenSaveButton = isNeedToShowSaveButton;
-      [self moveSavedButton];
-     }
-
-}
-
--(void)moveSavedButton
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
-    [UIView animateWithDuration:0.25f animations:^{
-        _saveButton.center = CGPointMake(-_saveButton.center.x, _saveButton.center.y);
-    }];
-
+    //return gestureRecognizer.state != UIGestureRecognizerStateChanged;
+    return YES;
 }
 
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(__unused BOOL)decelerate {
-    CGFloat showSaveImageDelta = -CGRectGetWidth(self.saveButton.bounds);
-    BOOL isSaveChoose = showSaveImageDelta > scrollView.contentOffset.x;
-    if (isSaveChoose)
+- (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo: (void *) contextInfo
+{
+
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"FAIL"
+                                                        message:error.localizedDescription
+                                                       delegate:nil
+                                              cancelButtonTitle:@"OK"
+                                              otherButtonTitles:nil];
+
+    if (error)
     {
-       [self downloadImage];
+        [alertView show];
     }
+
 }
 
 
@@ -261,23 +271,6 @@ static const float indentSaveButton = 10;
         });
     });
 }
-
-- (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo: (void *) contextInfo
-{
-
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"FAIL"
-                                                        message:error.localizedDescription
-                                                       delegate:nil
-                                              cancelButtonTitle:@"OK"
-                                              otherButtonTitles:nil];
-
-    if (error)
-    {
-    [alertView show];
-    }
-
-}
-
 
 
 @end
