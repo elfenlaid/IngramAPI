@@ -9,9 +9,7 @@
     BOOL _isFinished;
     BOOL _isExecuting;
 
-    NSPort *_port;
     NSRunLoop *_runLoop;
-    NSTimer *_timer;
 
     DataLoadConnectionCallback _callback;
 }
@@ -19,10 +17,6 @@
 @end
 
 @implementation DataLoadConnection
-
-- (void)dealloc {
-    
-}
 
 -(id)initWithURL:(NSURL *)url callback:(DataLoadConnectionCallback)callback
 {
@@ -88,8 +82,6 @@
     while (self.isExecuting && !self.isCancelled) {
         [_runLoop runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
     }
-    
-    NSLog(@"finished");
 }
 
 - (void)setIsExecuting:(BOOL)isExecuting {
