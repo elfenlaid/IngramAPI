@@ -11,6 +11,7 @@
 
     NSPort *_port;
     NSRunLoop *_runLoop;
+    NSTimer *_timer;
 
     DataLoadConnectionCallback _callback;
 }
@@ -18,6 +19,10 @@
 @end
 
 @implementation DataLoadConnection
+
+- (void)dealloc {
+    
+}
 
 -(id)initWithURL:(NSURL *)url callback:(DataLoadConnectionCallback)callback
 {
@@ -43,20 +48,20 @@
     {
         [_urlConnection scheduleInRunLoop:_runLoop forMode:NSDefaultRunLoopMode];
         [_urlConnection start];
-        [_runLoop run];
     }
 }
 
+
 -(void)cancel
 {
-
     [super cancel];
 
     [self cancelDownload];
 
-    self.isFinished = YES;
-    self.isExecuting = NO;
-    [_port removeFromRunLoop:_runLoop forMode:NSDefaultRunLoopMode];
+    if (self.isExecuting) {
+        self.isFinished = YES;
+        self.isExecuting = NO;
+    }
 }
 
 -(void)cancelDownload
@@ -72,17 +77,19 @@
 
 #pragma mark - NSOperation implementation
 
-- (void)start {
-    
+- (void)main {
     self.isFinished = NO;
     self.isExecuting = YES;
-
-    _port = [NSPort port];
+    
     _runLoop = [NSRunLoop currentRunLoop];
-    [_runLoop addPort:_port forMode:NSDefaultRunLoopMode];
-
-    [self cancelDownload];
+    
     [self startAsync];
+    
+    while (self.isExecuting && !self.isCancelled) {
+        [_runLoop runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
+    }
+    
+    NSLog(@"finished");
 }
 
 - (void)setIsExecuting:(BOOL)isExecuting {
@@ -123,7 +130,7 @@
 {
     void (^callbackBlock)() = ^{
         if (_callback) _callback(self,nil);
-
+        _callback = nil;
     };
 
     if ([NSThread mainThread] != [NSThread currentThread] )
@@ -135,18 +142,15 @@
 
     self.isFinished = YES;
     self.isExecuting = NO;
-    [_port removeFromRunLoop:_runLoop forMode:NSDefaultRunLoopMode];
-
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-    _callback(nil,error);
+    if (_callback) _callback(nil,error);
+    _callback = nil;
 
     self.isFinished = YES;
     self.isExecuting = NO;
-    [_port removeFromRunLoop:_runLoop forMode:NSDefaultRunLoopMode];
-
 }
 
 

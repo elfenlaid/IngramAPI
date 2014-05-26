@@ -30,7 +30,7 @@ static char key ;
     [self setImage:nil];
     [self.activityIndicator startAnimating];
 
-
+    
     DataLoadConnection *dataLoadConnection = [[DataLoadConnection alloc] initWithURL:post.thumbnailURL
                                                                             callback:^(DataLoadConnection *connection,NSError *error){
                                                                                if(!error)
@@ -44,10 +44,9 @@ static char key ;
                                                                                    NSLog(@"%@",error.localizedDescription);
                                                                                }
                                                                             }];
+    self.connection = dataLoadConnection;
 
     [DownloadManager addOperation:dataLoadConnection];
-
-    self.connection = dataLoadConnection;
 }
 
 
@@ -59,6 +58,8 @@ static char key ;
 
     UIImage *image = [UIImage imageWithData:connection.downloadData];
     [self setImage:image];
+    
+    
 }
 
 @end
