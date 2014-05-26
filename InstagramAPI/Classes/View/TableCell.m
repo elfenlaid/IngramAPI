@@ -2,6 +2,7 @@
 
 
 static const float indentSaveButton = 20;
+static const float defaultDuration = 0.25f;
 
 #define INDENT_IMAGE 3
 #define INDENT_NAME 5
@@ -31,6 +32,7 @@ static const float indentSaveButton = 20;
     NSURL *_imageURL;
 
 
+    UIPanGestureRecognizer *_panRecognizer;
 }
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
@@ -70,6 +72,8 @@ static const float indentSaveButton = 20;
 {
     UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panRecognizer:)];
     panRecognizer.delegate = self;
+    
+    _panRecognizer = panRecognizer;
 
     [self addGestureRecognizer:panRecognizer];
 }
@@ -80,16 +84,23 @@ static const float indentSaveButton = 20;
 
     if(recognizer.state == UIGestureRecognizerStateEnded)
     {
-        [UIView animateWithDuration:0.25f animations:^{
+        [UIView animateWithDuration: defaultDuration animations:^{
             self.frame = (CGRect){CGPointMake(0, self.frame.origin.y),self.frame.size};
+
+            if (!_isHiddenSaveButton)
+            {
+                [self downloadImage];
+            }
             _isHiddenSaveButton = YES;
-            [self downloadImage];
+
         }];
         return;
     }
 
     CGFloat translationCell = [recognizer translationInView:self].x;
     translationCell = translationCell > 0 ? translationCell:0;
+    CGFloat maxTranslation = (CGRectGetWidth(_saveButton.frame) + indentSaveButton*2);
+    translationCell = translationCell > maxTranslation ? maxTranslation : translationCell;
     self.frame =  (CGRect){CGPointMake(translationCell, self.frame.origin.y),self.frame.size};
 
     CGFloat positionSaveButton = _isHiddenSaveButton? -CGRectGetWidth(_saveButton.frame):0;
@@ -103,7 +114,7 @@ static const float indentSaveButton = 20;
         _isHiddenSaveButton = !_isHiddenSaveButton;
         positionSaveButton = _isHiddenSaveButton? -CGRectGetWidth(_saveButton.frame):0;
         saveButtonRect = (CGRect){CGPointMake(-translationCell-positionSaveButton,0),_saveButton.frame.size};
-        [UIView animateWithDuration:0.25f animations:^{
+        [UIView animateWithDuration:defaultDuration animations:^{
             _saveButton.frame = saveButtonRect;
         }];
     }
@@ -232,9 +243,15 @@ static const float indentSaveButton = 20;
 
 #pragma mark -  UIGestureRecognizersDelegate methods
 
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
-    //return gestureRecognizer.state != UIGestureRecognizerStateChanged;
+    if (gestureRecognizer == _panRecognizer)
+    {
+        CGPoint translation = [_panRecognizer translationInView:self];
+        BOOL gestureShouldBegin = fabs(translation.x) > fabs(translation.y);
+        return gestureShouldBegin;
+    }
+
     return YES;
 }
 
